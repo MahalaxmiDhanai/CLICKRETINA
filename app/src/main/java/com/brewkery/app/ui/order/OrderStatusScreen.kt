@@ -195,7 +195,7 @@ private fun OrderStatusContent(order: Order, onBackToMenu: () -> Unit) {
                     Text(
                         text       = stringResource(R.string.label_barista_accepted),
                         style      = MaterialTheme.typography.bodySmall,
-                        color      = Terracotta,
+                        color      = Color(0xFF047857), // emerald-700
                         fontWeight = FontWeight.SemiBold,
                         textAlign  = TextAlign.Center,
                     )

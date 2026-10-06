@@ -35,6 +35,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -114,7 +115,7 @@ private fun CartContent(
             TopAppBar(
                 title          = {
                     Text(
-                        text       = "My Cart",
+                        text       = "Your Cart",
                         fontWeight = FontWeight.Bold,
                         color      = Espresso,
                     )
@@ -126,6 +127,18 @@ private fun CartContent(
                             contentDescription = stringResource(R.string.cd_back_button),
                             tint               = Espresso,
                         )
+                    }
+                },
+                actions = {
+                    if (cartLines.isNotEmpty()) {
+                        TextButton(onClick = { cartViewModel.clearCart() }) {
+                            Text(
+                                text       = "Clear Cart",
+                                color      = Color(0xFFE11D48),
+                                style      = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

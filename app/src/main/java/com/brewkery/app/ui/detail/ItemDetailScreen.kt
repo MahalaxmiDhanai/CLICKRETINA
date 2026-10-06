@@ -123,6 +123,7 @@ private fun ItemDetailContent(
         mutableStateOf(item.customizations.sugarLevels.firstOrNull() ?: "")
     }
     var quantity by remember(item.id) { mutableIntStateOf(1) }
+    var isFavorite by remember(item.id) { mutableStateOf(false) }
 
     // Live price recomputation
     val sugarExtraCents = PriceCalculator.parseSugarExtraCents(chosenSugar)
@@ -222,18 +223,26 @@ private fun ItemDetailContent(
                         letterSpacing = 0.5.sp,
                     )
 
-                    // Heart icon — white circle with border
+                    // Heart icon — white circle with border, toggleable favorite
                     Surface(
                         shape           = CircleShape,
                         color           = Color.White,
                         border          = BorderStroke(1.dp, Border),
                         shadowElevation = 2.dp,
+                        onClick         = {
+                            isFavorite = !isFavorite
+                            Toast.makeText(
+                                context,
+                                if (isFavorite) "Item saved to favorites" else "Removed from favorites",
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                        },
                     ) {
                         Box(
                             modifier         = Modifier.size(36.dp),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text(text = "🤍", fontSize = 14.sp)
+                            Text(text = if (isFavorite) "❤️" else "🤍", fontSize = 14.sp)
                         }
                     }
                 }

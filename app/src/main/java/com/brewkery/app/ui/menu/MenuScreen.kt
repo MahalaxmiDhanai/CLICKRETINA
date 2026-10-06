@@ -568,18 +568,34 @@ fun MenuItemCard(
                         Text(text = "⭐", fontSize = 12.sp)
                         Spacer(Modifier.width(2.dp))
                         Text(
-                            text  = "%.1f".format(item.rating),
+                            text  = "%.1f (%d)".format(item.rating, item.reviewCount),
                             style = MaterialTheme.typography.bodySmall,
                             color = MutedBrown,
                         )
                     }
-                    // Price in terracotta
-                    Text(
-                        text       = PriceCalculator.formatPrice(item.basePriceCents, currencySymbol),
-                        style      = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                        color      = Terracotta,
-                    )
+                    // Price in terracotta + Customize button
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text       = PriceCalculator.formatPrice(item.basePriceCents, currencySymbol),
+                            style      = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            color      = Terracotta,
+                        )
+                        Spacer(Modifier.width(6.dp))
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = Terracotta,
+                        ) {
+                            Text(
+                                text       = "+ Customize",
+                                modifier   = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
+                                style      = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color      = Color.White,
+                                fontSize   = 10.sp,
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -686,7 +702,7 @@ fun ActiveOrderCard(order: Order, onOrderClick: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                // Ticket icon box
+                // Green status indicator icon box
                 Surface(
                     modifier = Modifier.size(36.dp),
                     shape    = RoundedCornerShape(10.dp),
@@ -695,7 +711,7 @@ fun ActiveOrderCard(order: Order, onOrderClick: () -> Unit) {
                     shadowElevation = 1.dp,
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Text(text = "🎫", fontSize = 16.sp)
+                        Text(text = "🟢", fontSize = 14.sp)
                     }
                 }
                 Spacer(Modifier.width(10.dp))
@@ -704,7 +720,7 @@ fun ActiveOrderCard(order: Order, onOrderClick: () -> Unit) {
                         Text(
                             text       = "ACTIVE ORDER",
                             style      = MaterialTheme.typography.labelSmall,
-                            color      = Terracotta,
+                            color      = Color(0xFF059669),
                             fontWeight = FontWeight.ExtraBold,
                             fontSize   = 9.sp,
                             letterSpacing = 0.8.sp,
@@ -714,35 +730,34 @@ fun ActiveOrderCard(order: Order, onOrderClick: () -> Unit) {
                             modifier = Modifier
                                 .size(5.dp)
                                 .clip(CircleShape)
-                                .background(Terracotta),
+                                .background(Color(0xFF059669)),
                         )
                     }
                     Text(
-                        text       = order.ticketId,
+                        text       = "Active Order ${order.ticketId}",
                         style      = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
                         color      = DarkText,
                     )
                     Text(
-                        text  = "Est. wait: ${order.estimatedWait}",
+                        text  = "Preparing (Arriving in ${order.estimatedWait})",
                         style = MaterialTheme.typography.labelSmall,
                         color = MutedBrown,
                     )
                 }
             }
 
-            // PREPARING pill
+            // "Track" pill — emerald background with white bold text
             Surface(
                 shape = RoundedCornerShape(8.dp),
-                color = Terracotta.copy(alpha = 0.12f),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Terracotta.copy(alpha = 0.3f)),
+                color = Color(0xFF059669),
             ) {
                 Text(
-                    text       = "PREPARING",
-                    modifier   = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                    text       = "Track",
+                    modifier   = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
                     style      = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
-                    color      = Terracotta,
+                    color      = Color.White,
                     fontSize   = 10.sp,
                 )
             }

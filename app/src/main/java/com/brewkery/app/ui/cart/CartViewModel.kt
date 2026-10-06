@@ -44,6 +44,8 @@ class CartViewModel(private val cartRepository: CartRepository) : ViewModel() {
     fun updateQuantity(key: CartLineKey, newQuantity: Int) =
         cartRepository.updateQuantity(key, newQuantity)
 
+    fun clearCart() = cartRepository.clearCart()
+
     /**
      * Places the order: clears the cart and stores the active order in the repository.
      * Returns the new Order so the caller can navigate to the Order Status screen.
