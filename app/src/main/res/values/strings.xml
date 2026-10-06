@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Brewkery</string>
+    <string name="cd_cart_icon">Cart</string>
+    <string name="cd_back_button">Navigate back</string>
+    <string name="cd_item_image">Item image</string>
+    <string name="cd_hero_image">Item hero image</string>
+    <string name="cd_logo">Brewkery logo</string>
+    <string name="cd_delivery_icon">Delivery scooter</string>
+    <string name="label_retry">Retry</string>
+    <string name="label_back_to_menu">Back to Menu</string>
+    <string name="label_add_to_cart">Add to Cart</string>
+    <string name="label_place_order">Place Order Now</string>
+    <string name="label_view_cart">View Your Cart</string>
+    <string name="label_proceed_checkout">Proceed to Checkout</string>
+    <string name="label_open">Open</string>
+    <string name="label_store_info">STORE INFO</string>
+    <string name="label_all_items">All Items</string>
+    <string name="label_preparing">PREPARING</string>
+    <string name="label_order_dispatched">Order Dispatched</string>
+    <string name="label_brewing_in_progress">Brewing in Progress!</string>
+    <string name="label_barista_message">Your ticket was dispatched to our barista.</string>
+    <string name="label_barista_accepted">Status: Barista accepted your order!</string>
+    <string name="error_loading">Oops! Something went wrong.\nPlease check your connection.</string>
+    <string name="empty_cart_message">Your cart is empty.\nAdd some items to get started!</string>
+</resources>

@@ -1,0 +1,42 @@
+# Built outputs
+/build
+/app/build
+/captures
+
+# Gradle
+.gradle
+gradle-wrapper.jar
+!gradle-wrapper.properties
+local.properties
+
+# IntelliJ / Android Studio
+.idea/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+
+# Kotlin / Java
+*.class
+out/
+
+# Android
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Proguard
+proguard/
+*.pro
+
+# Logs
+*.log
+hs_err_pid*
+
+# Test results
+test-results/
+
+# Generated keystore (never commit real keystores)
+*.keystore
+*.jks
