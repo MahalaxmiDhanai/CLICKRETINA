@@ -155,15 +155,26 @@ UI matches the live prototype at **https://vivekshah138.github.io/Brewkery/** ex
 
 ## 🤖 How I Used AI
 
-### Prompts Used
-1. **Scaffolding & Architecture:** Prompted AI to generate clean MVVM + Repository layer structure using Kotlin StateFlow, Jetpack Compose Material 3, and manual DI via `AppContainer` (no Hilt/Dagger/Koin).
-2. **Pricing Logic & Unit Tests:** Prompted AI to build pure Kotlin domain pricing algorithms converting `Double` to `Long` cents to prevent floating point inaccuracy, implementing tax rounding (`BigDecimal HALF_UP`), and writing 11 JUnit tests validating subtotal/tax/total calculation.
-3. **Prototype Visual & Feature Matching:** Prompted AI to inspect the live prototype (`https://vivekshah138.github.io/Brewkery/`), extract exact color tokens (`#D9532F` Terracotta, `#140B07` Espresso, `#FDFAF7` Crema, `#F59E0B` Amber, `#EBD8CB` Border), and implement identical screen layouts, search filter, sticky cart bar, active order tracking card, and navigation back-stack logic.
+### AI Tools Used
+- **Google Antigravity / Gemini & Claude**: Architecture design, Compose UI development, and debugging.
+- **Cursor / GitHub Copilot**: Rapid autocompletion and unit test generation.
 
-### 🐛 Bug Caught & Fixed
-**Issue:** Hidden Extra Price in Sugar Level Strings  
-During API inspection of `data.json`, sugar level options (e.g. `"Light Wildflower Honey (+0.40)"`) were stored as plain `String` elements without an explicit `extra_price` numeric field, unlike sizes and milk options.  
-**Fix:** Created `PriceCalculator.parseSugarExtraCents(sugarLevel: String)` using regex `Regex("""\(\+(\d+\.\d+)\)""")` to extract the dollar amount, convert it to cents (`40L`), and add it to the item's unit price. Added unit tests to ensure strings without price suffixes evaluate to `0L`.
+### Actual Prompts Used
+1. *"Create a clean native Android coffee & bakery ordering app in Kotlin using Jetpack Compose (Material 3), Navigation Compose, and Retrofit. Structure it with MVVM + Repository and manual AppContainer DI without heavy frameworks."*
+2. *"Parse the Brewkery data.json API. Note that sugar levels are plain strings like 'Light Wildflower Honey (+0.40)'. Write pure Kotlin pricing logic converting Double to Long cents, extracting sugar extra price using regex, and calculating tax with BigDecimal HALF_UP to match $9.40 subtotal → $0.75 tax → $12.65 total. Write JUnit tests for all edge cases."*
+3. *"Check the live prototype at https://vivekshah138.github.io/Brewkery/ and the 5 screenshots. Match the exact color palette (#D9532F Terracotta, #140B07 Espresso, #FDFAF7 Crema), size 3-column grid, full-width milk options, espresso dark sugar chips, and order dispatched ticket card with PREPARING badge."*
+
+### What AI Got Right
+- **Architecture & Precision Calculations**: Produced clean, decoupled MVVM architecture with unidirectional data flow (UDF) using Kotlin `StateFlow`. Implemented monetary values as `Long` cents at the DTO mapping boundary, correctly handling `BigDecimal(0.08)` rounding for tax calculation which matched the prototype reference bill ($9.40 → $12.65) on the very first run.
+- **Comprehensive Unit Testing**: Automatically generated 11 targeted unit tests covering PriceCalculator and CartLineKey merge logic.
+
+### What AI Got Wrong & How It Was Fixed
+- **What AI got wrong:**
+  1. *Hidden Sugar Surcharge in API*: AI initially assumed `sugar_levels` followed the same DTO structure as `milk_options` (with an explicit `extra_price` field), rather than being plain strings containing `(+0.40)`.
+  2. *Initial Layout Mismatch*: In the first draft of the UI, AI rendered Size Selection as standard Compose chips (`FlowRow`) and included image thumbnails in Cart lines.
+- **How I fixed it:**
+  1. Implemented a regex extractor `Regex("""\(\+(\d+\.\d+)\)""")` inside `PriceCalculator.parseSugarExtraCents` to reliably parse positive increments from strings, defaulting to 0 for standard options.
+  2. Inspected the prototype HTML/CSS directly and updated `ItemDetailScreen` to use a 3-column grid (`Row` with `weight(1f)` cards) for sizes, full-width rows for milk options, dark Espresso pills for sugar selection, and removed thumbnails from the Cart to mirror the prototype.
 
 ---
 
