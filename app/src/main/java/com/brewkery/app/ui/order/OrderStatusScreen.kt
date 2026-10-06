@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.brewkery.app.ui.order
 
 import androidx.compose.foundation.BorderStroke
@@ -22,24 +20,20 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,9 +41,6 @@ import androidx.compose.ui.unit.sp
 import com.brewkery.app.R
 import com.brewkery.app.domain.Order
 import com.brewkery.app.ui.cart.CartViewModel
-import com.brewkery.app.ui.theme.Amber
-import com.brewkery.app.ui.theme.BannerFrom
-import com.brewkery.app.ui.theme.BannerTo
 import com.brewkery.app.ui.theme.Border
 import com.brewkery.app.ui.theme.DarkText
 import com.brewkery.app.ui.theme.Espresso
@@ -74,175 +65,208 @@ fun OrderStatusScreen(
     }
 }
 
-// ── Order status content ──────────────────────────────────────────────────────
+// ── Order status content matching prototype exactly ───────────────────────────
 
 @Composable
 private fun OrderStatusContent(order: Order, onBackToMenu: () -> Unit) {
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text       = stringResource(R.string.label_order_dispatched),
-                        fontWeight = FontWeight.Bold,
-                        color      = Espresso,
-                    )
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.White,
-                ),
-            )
-        },
+        containerColor = Color(0xFFFDFAF7),
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 20.dp),
+                .padding(horizontal = 20.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            // Success badge at top
-            Box(
-                modifier = Modifier
-                    .size(72.dp)
-                    .clip(CircleShape)
-                    .background(
-                        Brush.radialGradient(
-                            listOf(BannerFrom, BannerTo)
-                        )
-                    ),
-                contentAlignment = Alignment.Center,
+            Column(
+                modifier            = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(text = "☕", fontSize = 32.sp)
-            }
+                Spacer(Modifier.height(16.dp))
 
-            // Headings
-            Text(
-                text       = stringResource(R.string.label_brewing_in_progress),
-                style      = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                color      = Espresso,
-                textAlign  = TextAlign.Center,
-            )
-            Text(
-                text      = stringResource(R.string.label_barista_message),
-                style     = MaterialTheme.typography.bodySmall,
-                color     = MutedBrown,
-                textAlign = TextAlign.Center,
-            )
-
-            Spacer(Modifier.height(4.dp))
-
-            // ── Ticket card ───────────────────────────────────────────────────
-            Card(
-                modifier  = Modifier.fillMaxWidth(),
-                shape     = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-                colors    = CardDefaults.cardColors(containerColor = Color.White),
-                border    = BorderStroke(1.dp, Border),
-            ) {
-                Column(
-                    modifier            = Modifier.padding(20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                // Mug Badge: bg-[#f7ebe1] border-2 border-[#d9532f]
+                Surface(
+                    modifier = Modifier.size(80.dp),
+                    shape    = CircleShape,
+                    color    = Color(0xFFF7EBE1),
+                    border   = BorderStroke(2.dp, Terracotta),
+                    shadowElevation = 4.dp,
                 ) {
-                    // Ticket ID
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text      = "Order Ticket",
-                            style     = MaterialTheme.typography.labelSmall,
-                            color     = MutedBrown,
-                        )
-                        Text(
-                            text       = order.ticketId,
-                            style      = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.ExtraBold,
-                            color      = Espresso,
-                        )
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(text = "☕", fontSize = 34.sp)
                     }
+                }
 
-                    // PREPARING status chip — amber tint
-                    Surface(
-                        shape  = RoundedCornerShape(50),
-                        color  = Amber.copy(alpha = 0.15f),
-                        border = BorderStroke(1.dp, Amber.copy(alpha = 0.5f)),
+                Spacer(Modifier.height(14.dp))
+
+                // "ORDER DISPATCHED" small uppercase tracking-wider in terracotta
+                Text(
+                    text          = "ORDER DISPATCHED",
+                    style         = MaterialTheme.typography.labelSmall,
+                    fontWeight    = FontWeight.Black,
+                    color         = Terracotta,
+                    letterSpacing = 1.2.sp,
+                    fontSize      = 10.sp,
+                )
+
+                Spacer(Modifier.height(4.dp))
+
+                // "Brewing in Progress!"
+                Text(
+                    text       = "Brewing in Progress!",
+                    style      = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Black,
+                    color      = Espresso,
+                    textAlign  = TextAlign.Center,
+                    fontSize   = 22.sp,
+                )
+
+                Spacer(Modifier.height(4.dp))
+
+                // Subtitle
+                Text(
+                    text       = "Your ticket was dispatched to our barista.",
+                    style      = MaterialTheme.typography.bodySmall,
+                    color      = MutedBrown,
+                    textAlign  = TextAlign.Center,
+                    lineHeight = 16.sp,
+                )
+
+                Spacer(Modifier.height(24.dp))
+
+                // ── Ticket Card ───────────────────────────────────────────────
+                Card(
+                    modifier  = Modifier.fillMaxWidth(),
+                    shape     = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                    colors    = CardDefaults.cardColors(containerColor = Color.White),
+                    border    = BorderStroke(1.dp, Border),
+                ) {
+                    Column(
+                        modifier            = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
-                        Text(
-                            text       = stringResource(R.string.label_preparing),
-                            modifier   = Modifier.padding(horizontal = 20.dp, vertical = 6.dp),
-                            style      = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.ExtraBold,
-                            color      = Color(0xFFB45309), // amber-700 for legibility
-                            letterSpacing = 1.sp,
-                        )
+                        // Ticket header row: Order Ticket + ref code | PREPARING chip
+                        Row(
+                            modifier              = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment     = Alignment.CenterVertically,
+                        ) {
+                            Column {
+                                Text(
+                                    text          = "ORDER TICKET",
+                                    fontSize      = 9.sp,
+                                    fontWeight    = FontWeight.Bold,
+                                    color         = MutedBrown,
+                                    letterSpacing = 0.5.sp,
+                                )
+                                Text(
+                                    text       = order.ticketId,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize   = 15.sp,
+                                    color      = Espresso,
+                                )
+                            }
+
+                            // PREPARING chip: bg-amber-100 text-amber-800
+                            Surface(
+                                shape = RoundedCornerShape(50),
+                                color = Color(0xFFFEF3C7),
+                            ) {
+                                Text(
+                                    text          = "PREPARING",
+                                    modifier      = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                    fontSize      = 10.sp,
+                                    fontWeight    = FontWeight.Black,
+                                    color         = Color(0xFF92400E),
+                                    letterSpacing = 0.5.sp,
+                                )
+                            }
+                        }
+
+                        HorizontalDivider(color = Border.copy(alpha = 0.6f))
+
+                        // Estimated Wait row: value in terracotta bold
+                        Row(
+                            modifier              = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment     = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text     = "Estimated Wait:",
+                                fontSize = 12.sp,
+                                color    = MutedBrown,
+                            )
+                            Text(
+                                text       = order.estimatedWait,
+                                fontSize   = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color      = Terracotta,
+                            )
+                        }
+
+                        // Items Ordered row: value in espresso semibold
+                        Row(
+                            modifier              = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment     = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text     = "Items Ordered:",
+                                fontSize = 12.sp,
+                                color    = MutedBrown,
+                            )
+                            Text(
+                                text       = "${order.totalItemCount} Item${if (order.totalItemCount != 1) "s" else ""}",
+                                fontSize   = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color      = Espresso,
+                            )
+                        }
+
+                        HorizontalDivider(color = Border.copy(alpha = 0.6f))
+
+                        // Status block
+                        Column {
+                            Text(
+                                text     = "Status:",
+                                fontSize = 10.sp,
+                                color    = MutedBrown,
+                            )
+                            Spacer(Modifier.height(2.dp))
+                            Text(
+                                text       = "Barista accepted your order!",
+                                fontSize   = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color      = Color(0xFF047857), // emerald-700
+                            )
+                        }
                     }
-
-                    HorizontalDivider(color = Border)
-
-                    // Detail rows
-                    OrderDetailRow("Estimated Wait",  order.estimatedWait)
-                    OrderDetailRow(
-                        label = "Items Ordered",
-                        value = "${order.totalItemCount} Item${if (order.totalItemCount != 1) "s" else ""}",
-                    )
-
-                    HorizontalDivider(color = Border)
-
-                    // Status message
-                    Text(
-                        text       = stringResource(R.string.label_barista_accepted),
-                        style      = MaterialTheme.typography.bodySmall,
-                        color      = Color(0xFF047857), // emerald-700
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign  = TextAlign.Center,
-                    )
                 }
             }
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(28.dp))
 
-            // Back to Menu button
+            // Return Back to Menu Button: bg-[#140b07] text-white font-extrabold
             Button(
                 onClick  = onBackToMenu,
-                modifier = Modifier.fillMaxWidth(),
-                shape    = RoundedCornerShape(14.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape    = RoundedCornerShape(12.dp),
                 colors   = ButtonDefaults.buttonColors(containerColor = Espresso),
             ) {
                 Text(
-                    text       = stringResource(R.string.label_back_to_menu),
-                    style      = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
+                    text       = "Back to Menu",
+                    style      = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.ExtraBold,
                     color      = Color.White,
                 )
             }
         }
-    }
-}
-
-// ── Detail row ────────────────────────────────────────────────────────────────
-
-@Composable
-private fun OrderDetailRow(label: String, value: String) {
-    Row(
-        modifier              = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment     = Alignment.CenterVertically,
-    ) {
-        Text(
-            text  = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = MutedBrown,
-        )
-        Text(
-            text       = value,
-            style      = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.SemiBold,
-            color      = DarkText,
-        )
     }
 }

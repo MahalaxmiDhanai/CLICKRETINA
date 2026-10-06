@@ -3,17 +3,17 @@
 package com.brewkery.app.ui.cart
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,9 +24,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,27 +34,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.brewkery.app.R
 import com.brewkery.app.domain.CartLine
 import com.brewkery.app.domain.PriceCalculator
-import com.brewkery.app.domain.StoreMeta
 import com.brewkery.app.ui.menu.MenuUiState
 import com.brewkery.app.ui.menu.MenuViewModel
 import com.brewkery.app.ui.theme.Border
@@ -65,62 +57,38 @@ import com.brewkery.app.ui.theme.Espresso
 import com.brewkery.app.ui.theme.MutedBrown
 import com.brewkery.app.ui.theme.Terracotta
 
-// ── Entry point ───────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
 fun CartScreen(
-    menuViewModel: MenuViewModel,
     cartViewModel: CartViewModel,
+    menuViewModel: MenuViewModel,
     onBack:        () -> Unit,
     onOrderPlaced: () -> Unit,
 ) {
-    val menuState    by menuViewModel.uiState.collectAsState()
-    val meta          = (menuState as? MenuUiState.Success)?.meta
     val cartLines    by cartViewModel.cartLines.collectAsState()
     val subtotalCents by cartViewModel.subtotalCents.collectAsState()
+    val menuState    by menuViewModel.uiState.collectAsState()
+    val meta         = (menuState as? MenuUiState.Success)?.meta
 
-    if (meta == null) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = Terracotta)
-        }
-    } else {
-        CartContent(
-            meta          = meta,
-            cartLines     = cartLines,
-            subtotalCents = subtotalCents,
-            cartViewModel = cartViewModel,
-            onBack        = onBack,
-            onOrderPlaced = onOrderPlaced,
-        )
-    }
-}
-
-// ── Full cart content ─────────────────────────────────────────────────────────
-
-@Composable
-private fun CartContent(
-    meta:          StoreMeta,
-    cartLines:     List<CartLine>,
-    subtotalCents: Long,
-    cartViewModel: CartViewModel,
-    onBack:        () -> Unit,
-    onOrderPlaced: () -> Unit,
-) {
-    val taxCents   = PriceCalculator.taxCents(subtotalCents, meta.taxRatePercent)
-    val totalCents = PriceCalculator.totalCents(subtotalCents, meta.deliveryFeeCents, taxCents)
+    val deliveryFeeCents = meta?.deliveryFeeCents ?: 250L
+    val taxCents         = meta?.let { PriceCalculator.taxCents(subtotalCents, it.taxRatePercent) } ?: 0L
+    val totalCents       = subtotalCents + deliveryFeeCents + taxCents
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = Color(0xFFFDFAF7),
         topBar = {
-            TopAppBar(
-                title          = {
-                    Text(
-                        text       = "Your Cart",
-                        fontWeight = FontWeight.Bold,
-                        color      = Espresso,
-                    )
-                },
-                navigationIcon = {
+            // ── Cart header — back | "YOUR CART" center | Clear Cart right ────
+            Surface(
+                color           = Color.White,
+                shadowElevation = 2.dp,
+            ) {
+                Row(
+                    modifier          = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector        = Icons.AutoMirrored.Filled.ArrowBack,
@@ -128,26 +96,29 @@ private fun CartContent(
                             tint               = Espresso,
                         )
                     }
-                },
-                actions = {
-                    if (cartLines.isNotEmpty()) {
-                        TextButton(onClick = { cartViewModel.clearCart() }) {
-                            Text(
-                                text       = "Clear Cart",
-                                color      = Color(0xFFE11D48),
-                                style      = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        }
+                    Text(
+                        text          = "YOUR CART",
+                        modifier      = Modifier.weight(1f),
+                        style         = MaterialTheme.typography.titleMedium,
+                        fontWeight    = FontWeight.ExtraBold,
+                        color         = Espresso,
+                        textAlign     = TextAlign.Center,
+                        letterSpacing = 1.sp,
+                    )
+                    TextButton(onClick = { cartViewModel.clearCart() }) {
+                        Text(
+                            text       = "Clear Cart",
+                            color      = Terracotta,
+                            style      = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.SemiBold,
+                        )
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White,
-                ),
-            )
+                }
+            }
         },
         bottomBar = {
-            if (cartLines.isNotEmpty()) {
+            // "Place Order Now" only shown when cart has items
+            if (cartLines.isNotEmpty() && meta != null) {
                 PlaceOrderBar(
                     totalCents     = totalCents,
                     currencySymbol = meta.currencySymbol,
@@ -177,19 +148,20 @@ private fun CartContent(
                 ) { line ->
                     CartLineCard(
                         line           = line,
-                        currencySymbol = meta.currencySymbol,
+                        currencySymbol = meta?.currencySymbol ?: "$",
                         onIncrease     = { cartViewModel.updateQuantity(line.key, line.quantity + 1) },
                         onDecrease     = { cartViewModel.updateQuantity(line.key, line.quantity - 1) },
                     )
                 }
                 item(key = "summary") {
+                    Spacer(Modifier.height(4.dp))
                     OrderSummaryCard(
                         subtotalCents    = subtotalCents,
-                        deliveryFeeCents = meta.deliveryFeeCents,
+                        deliveryFeeCents = deliveryFeeCents,
                         taxCents         = taxCents,
                         totalCents       = totalCents,
-                        taxRatePercent   = meta.taxRatePercent,
-                        currencySymbol   = meta.currencySymbol,
+                        taxRatePercent   = meta?.taxRatePercent ?: 8.0,
+                        currencySymbol   = meta?.currencySymbol ?: "$",
                     )
                     Spacer(Modifier.height(8.dp))
                 }
@@ -198,7 +170,7 @@ private fun CartContent(
     }
 }
 
-// ── Cart line card ────────────────────────────────────────────────────────────
+// ── Cart line card — NO thumbnail, matching prototype exactly ─────────────────
 
 @Composable
 private fun CartLineCard(
@@ -207,11 +179,11 @@ private fun CartLineCard(
     onIncrease:     () -> Unit,
     onDecrease:     () -> Unit,
 ) {
-    val summary = buildList<String> {
-        if (line.chosenSize.label.isNotBlank()) add(line.chosenSize.label)
-        if (line.chosenMilk.name.isNotBlank())  add(line.chosenMilk.name)
-        if (line.chosenSugar.isNotBlank())       add(line.chosenSugar)
-    }.joinToString(" · ")
+    // Options summary: Tall (8 oz) • Oat Milk (Barista Blend)
+    val sizePart  = line.chosenSize.label.takeIf { it.isNotBlank() } ?: ""
+    val milkPart  = line.chosenMilk.name.takeIf  { it.isNotBlank() } ?: ""
+    val sugarPart = line.chosenSugar.takeIf       { it.isNotBlank() } ?: ""
+    val summary   = listOf(sizePart, milkPart, sugarPart).filter { it.isNotBlank() }.joinToString(" • ")
 
     val lineTotalCents = line.unitPriceCents * line.quantity
 
@@ -227,82 +199,74 @@ private fun CartLineCard(
         Row(
             modifier          = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.Top,
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Thumbnail
-            AsyncImage(
-                model              = line.item.imageUrl,
-                contentDescription = stringResource(R.string.cd_item_image),
-                modifier           = Modifier
-                    .size(72.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale       = ContentScale.Crop,
-            )
-            Spacer(Modifier.size(12.dp))
+            // Left: name, summary, price
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text       = line.item.name,
                     style      = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Bold,
                     color      = DarkText,
                     maxLines   = 1,
                     overflow   = TextOverflow.Ellipsis,
                 )
                 if (summary.isNotBlank()) {
+                    Spacer(Modifier.height(2.dp))
                     Text(
                         text     = summary,
                         style    = MaterialTheme.typography.labelSmall,
                         color    = MutedBrown,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
+                        fontSize = 10.sp,
                     )
                 }
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text       = PriceCalculator.formatPrice(lineTotalCents, currencySymbol),
+                    style      = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.ExtraBold,
+                    color      = Terracotta,
+                )
+            }
+
+            Spacer(Modifier.width(12.dp))
+
+            // Right: +/- stepper in cream rounded container
+            Surface(
+                shape  = RoundedCornerShape(10.dp),
+                color  = Color(0xFFF7EBE1),
+                border = BorderStroke(1.dp, Border),
+            ) {
                 Row(
-                    modifier              = Modifier.fillMaxWidth(),
+                    modifier              = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                     verticalAlignment     = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
-                    Column {
-                        Text(
-                            text  = "${PriceCalculator.formatPrice(line.unitPriceCents, currencySymbol)} × ${line.quantity}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MutedBrown,
-                        )
-                        Text(
-                            text       = PriceCalculator.formatPrice(lineTotalCents, currencySymbol),
-                            style      = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            color      = Terracotta,
-                        )
-                    }
-                    // +/- stepper
-                    Row(
-                        verticalAlignment     = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        FilledTonalIconButton(
-                            onClick  = onDecrease,
-                            modifier = Modifier.size(32.dp),
-                        ) {
-                            Text("−", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                        }
-                        Text(
-                            text       = line.quantity.toString(),
-                            style      = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            textAlign  = TextAlign.Center,
-                            color      = DarkText,
-                            modifier   = Modifier.widthIn(min = 24.dp),
-                        )
-                        FilledTonalIconButton(
-                            onClick  = onIncrease,
-                            modifier = Modifier.size(32.dp),
-                        ) {
-                            Text("+", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                        }
-                    }
+                    Text(
+                        text       = "−",
+                        fontWeight = FontWeight.Bold,
+                        fontSize   = 14.sp,
+                        color      = DarkText,
+                        modifier   = Modifier.clickable { onDecrease() },
+                    )
+                    Text(
+                        text       = line.quantity.toString(),
+                        style      = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        color      = DarkText,
+                        textAlign  = TextAlign.Center,
+                        modifier   = Modifier.widthIn(min = 20.dp),
+                    )
+                    Text(
+                        text       = "+",
+                        fontWeight = FontWeight.Bold,
+                        fontSize   = 14.sp,
+                        color      = DarkText,
+                        modifier   = Modifier.clickable { onIncrease() },
+                    )
                 }
             }
         }
@@ -332,21 +296,19 @@ private fun OrderSummaryCard(
         border    = BorderStroke(1.dp, Border),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text       = "Order Summary",
-                style      = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
-                color      = Espresso,
+            SummaryRow("Subtotal", PriceCalculator.formatPrice(subtotalCents, currencySymbol))
+            SummaryRow("Delivery Fee", PriceCalculator.formatPrice(deliveryFeeCents, currencySymbol))
+            SummaryRow("Est. Tax ($taxRateDisplay%)", PriceCalculator.formatPrice(taxCents, currencySymbol))
+            // Dashed divider before total
+            HorizontalDivider(
+                modifier  = Modifier.padding(vertical = 10.dp),
+                color     = Border,
+                thickness = 1.dp,
             )
-            Spacer(Modifier.height(12.dp))
-            SummaryRow("Subtotal",                    PriceCalculator.formatPrice(subtotalCents,    currencySymbol))
-            SummaryRow("Delivery Fee",                PriceCalculator.formatPrice(deliveryFeeCents, currencySymbol))
-            SummaryRow("Est. Tax ($taxRateDisplay%)", PriceCalculator.formatPrice(taxCents,         currencySymbol))
-            HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = Border)
             SummaryRow(
-                label   = "Total Payable",
-                amount  = PriceCalculator.formatPrice(totalCents, currencySymbol),
-                isBold  = true,
+                label  = "Total Payable",
+                amount = PriceCalculator.formatPrice(totalCents, currencySymbol),
+                isBold = true,
             )
         }
     }
@@ -364,13 +326,13 @@ private fun SummaryRow(label: String, amount: String, isBold: Boolean = false) {
         Text(
             text       = label,
             style      = if (isBold) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodySmall,
-            fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
+            fontWeight = if (isBold) FontWeight.ExtraBold else FontWeight.Normal,
             color      = if (isBold) Espresso else MutedBrown,
         )
         Text(
             text       = amount,
             style      = if (isBold) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodySmall,
-            fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
+            fontWeight = if (isBold) FontWeight.ExtraBold else FontWeight.Normal,
             color      = if (isBold) Terracotta else DarkText,
         )
     }
@@ -394,11 +356,11 @@ private fun PlaceOrderBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp),
-            shape    = RoundedCornerShape(14.dp),
-            colors   = ButtonDefaults.buttonColors(containerColor = Terracotta),
+            shape  = RoundedCornerShape(14.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Terracotta),
         ) {
             Text(
-                text       = "${stringResource(R.string.label_place_order)} • ${PriceCalculator.formatPrice(totalCents, currencySymbol)}",
+                text       = "🔒 ${stringResource(R.string.label_place_order)} • ${PriceCalculator.formatPrice(totalCents, currencySymbol)}",
                 style      = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color      = Color.White,
