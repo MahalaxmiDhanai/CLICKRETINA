@@ -153,6 +153,20 @@ UI matches the live prototype at **https://vivekshah138.github.io/Brewkery/** ex
 
 ---
 
+## 🤖 How I Used AI
+
+### Prompts Used
+1. **Scaffolding & Architecture:** Prompted AI to generate clean MVVM + Repository layer structure using Kotlin StateFlow, Jetpack Compose Material 3, and manual DI via `AppContainer` (no Hilt/Dagger/Koin).
+2. **Pricing Logic & Unit Tests:** Prompted AI to build pure Kotlin domain pricing algorithms converting `Double` to `Long` cents to prevent floating point inaccuracy, implementing tax rounding (`BigDecimal HALF_UP`), and writing 11 JUnit tests validating subtotal/tax/total calculation.
+3. **Prototype Visual & Feature Matching:** Prompted AI to inspect the live prototype (`https://vivekshah138.github.io/Brewkery/`), extract exact color tokens (`#D9532F` Terracotta, `#140B07` Espresso, `#FDFAF7` Crema, `#F59E0B` Amber, `#EBD8CB` Border), and implement identical screen layouts, search filter, sticky cart bar, active order tracking card, and navigation back-stack logic.
+
+### 🐛 Bug Caught & Fixed
+**Issue:** Hidden Extra Price in Sugar Level Strings  
+During API inspection of `data.json`, sugar level options (e.g. `"Light Wildflower Honey (+0.40)"`) were stored as plain `String` elements without an explicit `extra_price` numeric field, unlike sizes and milk options.  
+**Fix:** Created `PriceCalculator.parseSugarExtraCents(sugarLevel: String)` using regex `Regex("""\(\+(\d+\.\d+)\)""")` to extract the dollar amount, convert it to cents (`40L`), and add it to the item's unit price. Added unit tests to ensure strings without price suffixes evaluate to `0L`.
+
+---
+
 ## 📝 Assumptions & Decisions
 
 1. **Item Detail uses menu list data** — the spec allows this; the `GET api/items/{id}.json` endpoint is wired in the Retrofit service and repository but the UI reads from the already-loaded menu to avoid a redundant network call.
@@ -161,12 +175,6 @@ UI matches the live prototype at **https://vivekshah138.github.io/Brewkery/** ex
 4. **Cart identity** — `CartLineKey(itemId, sizeId, milkOptionId, sugarLevel)`. Adding the same configuration again merges quantities.
 5. **Search** — real-time client-side filter on name + tagline; does not reset the selected category.
 6. **No dark theme** — the prototype is light-only; dark theme was not implemented to stay within the 4-6 hour time-box.
-
----
-
-## 🤖 How I Used AI
-
-> *[Fill in as appropriate — e.g.: "Used AI assistance for initial scaffold and boilerplate generation. All architecture decisions, pricing logic, and UI polish were reviewed and validated manually."]*
 
 ---
 
