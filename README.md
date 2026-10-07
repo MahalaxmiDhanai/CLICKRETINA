@@ -46,16 +46,29 @@ At Clickretina you emphasize being AI-first. Throughout this project, I used AI 
 - **Google Antigravity & Claude**: Used for initial architecture planning, drafting the Jetpack Compose screens, and debugging Compose window inset issues.
 - **Cursor / GitHub Copilot**: Used inside the IDE for fast autocompletion, writing DTOs, and scaffolding unit tests.
 
-### 3 Actual Prompts I Sent
+### High-Signal Prompts I Used (How I Directed the AI)
 
-#### 1. Architecture & Clean Financial Boundary
-> *"I'm building an Android coffee ordering app in Kotlin using Jetpack Compose and Retrofit. Can you help me set up an MVVM structure with a single Activity and manual DI (an AppContainer singleton)? I want to fetch menu data from a static raw JSON endpoint and convert all prices to Long cents at the mapping layer so we don't deal with floating point bugs in the UI."*
+Instead of asking generic questions like *"make an app"*, I treated AI as a senior engineering partner by giving explicit constraints, design tokens, non-functional requirements, and architectural boundaries. Here are the 4 key prompts I used:
 
-#### 2. Handling the Sugar Price API Quirk
-> *"Look at the API response for Brewkery's data.json. The sizes and milk options have explicit `extra_price` fields, but `sugar_levels` are just plain strings like 'Light Wildflower Honey (+0.40)'. How should I extract this extra price in Kotlin so that the cart and total calculation picks it up properly? Also write a test to make sure $9.40 subtotal + $2.50 delivery + 8% tax equals $12.65."*
+#### 1. Architecture, State Scoping & Money Representation
+> **Why this prompt**: Sets up a solid foundational architecture upfront, prevents floating-point currency errors at the network boundary, and avoids state loss during navigation without over-engineering with heavy frameworks.
+> 
+> *"Let's architect a native Android coffee ordering app in Kotlin following Clean MVVM. Here are my requirements: (1) Single-Activity with Navigation Compose; (2) Manual DI via an AppContainer singleton — no heavy Hilt/Dagger setup needed for this scope; (3) Retrofit 2 + Gson fetching from raw JSON endpoints; (4) Scope CartViewModel to the Activity so the in-memory cart and active order never get destroyed when navigating between screens; (5) Convert incoming Double prices into Long cents at DtoMappers.kt so zero floating-point arithmetic touches the domain or UI. Scaffold the core layers, Repositories, and ViewModels."*
 
-#### 3. Fixing the Bottom Bar on Real Phones (Window Insets)
-> *"When I test the Item Detail screen on my phone, the bottom 'Add to Cart' bar has a transparent gap underneath it on gesture navigation, and the sugar levels card peeks out from the bottom. How should I arrange `navigationBarsPadding` and `Surface` in Compose so the white bar fills all the way to the bottom of the screen while keeping the button above the navigation bar?"*
+#### 2. Reverse-Engineering the Prototype UI in Jetpack Compose
+> **Why this prompt**: Provides the exact visual specs, Tailwind styles, and component constraints extracted directly from the live prototype so the generated Compose code matches pixel-for-pixel.
+> 
+> *"I'm inspecting the Brewkery web prototype (https://vivekshah138.github.io/Brewkery/). I need to match the design 1:1 in Jetpack Compose Material 3: (1) Define our color tokens: Terracotta (#D9532F), Espresso (#140B07), Crema (#FDFAF7), Amber (#F59E0B), Border (#EBD8CB), MutedBrown (#786457); (2) Catalog cards must have 56dp rounded thumbnails, amber-100 badges, star ratings, and a terracotta '+ Customize' button; (3) Item Detail needs a 3-column equal-width size selection grid with cream selected tint, full-width milk rows, and dark Espresso rounded chips for sugar levels; (4) The bottom CTA must be a gradient-terracotta button side-by-side with a bordered quantity stepper. Write modular composables for these screens."*
+
+#### 3. API Edge Cases & Accounting-Grade Financial Math
+> **Why this prompt**: Identifies a hidden data quirk in the API response and enforces strict financial rounding rules verified against the reference test bill.
+> 
+> *"Check the data.json API response closely: 'sizes' and 'milk_options' have numeric extra_price fields, but 'sugar_levels' are unstructured plain strings with embedded price strings like 'Light Wildflower Honey (+0.40)'. Write a pure Kotlin PriceCalculator that: (1) Uses regex to pull the extra price from sugar strings, defaulting to 0 for standard options; (2) Keeps all calculations strictly in Long cents; (3) Computes 8% tax on the subtotal using BigDecimal HALF_UP rounding to match the prototype's reference bill ($9.40 subtotal + $2.50 delivery + $0.75 tax = $12.65 total); (4) Write JUnit 4 unit tests covering every calculation and edge case."*
+
+#### 4. Real-Device Edge-to-Edge Window Inset Engineering
+> **Why this prompt**: Diagnoses a subtle visual defect discovered during physical phone testing and directs the AI toward the architectural root cause rather than a quick hack.
+> 
+> *"On physical device testing with enableEdgeToEdge(), the bottom 'Add to Cart' bar has a visual bug: the outer Surface has navigationBarsPadding(), which makes it stop above the system gesture bar, leaving the bottom 30dp transparent so the scrolled LazyColumn list peeks through underneath! How do we structure Scaffold and Compose insets so the Surface background paints solid full-bleed all the way to the physical screen edge, while keeping the interactive buttons and steppers safely padded above the gesture bar? Also ensure LazyColumn bottom padding accommodates the bar so the last item is fully scrollable."*
 
 ### What AI Got Right
 - **Clean MVVM Architecture**: It set up a very clean unidirectional data flow with Kotlin `StateFlow`. Having the ViewModels scoped to the Activity meant the cart state and active order stayed intact when switching between screens.
