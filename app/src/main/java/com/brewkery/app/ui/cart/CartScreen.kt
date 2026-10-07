@@ -3,6 +3,7 @@
 package com.brewkery.app.ui.cart
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,6 +40,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -325,14 +327,14 @@ private fun SummaryRow(label: String, amount: String, isBold: Boolean = false) {
     ) {
         Text(
             text       = label,
-            style      = if (isBold) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodySmall,
+            fontSize   = if (isBold) 13.sp else 11.sp,
             fontWeight = if (isBold) FontWeight.ExtraBold else FontWeight.Normal,
             color      = if (isBold) Espresso else MutedBrown,
         )
         Text(
             text       = amount,
-            style      = if (isBold) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodySmall,
-            fontWeight = if (isBold) FontWeight.ExtraBold else FontWeight.Normal,
+            fontSize   = if (isBold) 14.sp else 11.sp,
+            fontWeight = if (isBold) FontWeight.ExtraBold else FontWeight.SemiBold,
             color      = if (isBold) Terracotta else DarkText,
         )
     }
@@ -355,16 +357,35 @@ private fun PlaceOrderBar(
             onClick  = onPlaceOrder,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            shape  = RoundedCornerShape(14.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Terracotta),
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .height(48.dp),
+            shape          = RoundedCornerShape(12.dp),
+            colors         = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
         ) {
-            Text(
-                text       = "🔒 ${stringResource(R.string.label_place_order)} • ${PriceCalculator.formatPrice(totalCents, currencySymbol)}",
-                style      = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color      = Color.White,
-            )
+            // Gradient matches prototype: gradient-terracotta class
+            Box(
+                modifier         = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFFD9532F),
+                                Color(0xFFB84121),
+                                Color(0xFF8C2B12),
+                            ),
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text       = "🔒 ${stringResource(R.string.label_place_order)} • ${PriceCalculator.formatPrice(totalCents, currencySymbol)}",
+                    fontWeight = FontWeight.ExtraBold,
+                    color      = Color.White,
+                    fontSize   = 12.sp,
+                )
+            }
         }
     }
 }

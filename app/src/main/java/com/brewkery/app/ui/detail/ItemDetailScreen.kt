@@ -45,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -227,14 +228,36 @@ private fun ItemDetailContent(
                             .weight(1f)
                             .height(48.dp),
                         shape  = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Terracotta),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                        ),
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
                     ) {
-                        Text(
-                            text       = "${stringResource(R.string.label_add_to_cart)} • ${PriceCalculator.formatPrice(lineTotalCents, currencySymbol)}",
-                            style      = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            color      = Color.White,
-                        )
+                        // Gradient background matching prototype: gradient-terracotta
+                        Box(
+                            modifier         = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.linearGradient(
+                                        colors = listOf(
+                                            Color(0xFFD9532F), // #d9532f
+                                            Color(0xFFB84121), // #b84121
+                                            Color(0xFF8C2B12), // #8c2b12
+                                        ),
+                                        start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                                        end   = androidx.compose.ui.geometry.Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
+                                    ),
+                                    RoundedCornerShape(12.dp),
+                                ),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text       = "${stringResource(R.string.label_add_to_cart)} • ${PriceCalculator.formatPrice(lineTotalCents, currencySymbol)}",
+                                fontWeight = FontWeight.ExtraBold,
+                                color      = Color.White,
+                                fontSize   = 12.sp,
+                            )
+                        }
                     }
                 }
             }
@@ -313,12 +336,12 @@ private fun ItemDetailContent(
                 }
             }
 
-            // ── 2. Hero image — full width, no horizontal padding, badge top-left
+            // ── 2. Hero image — h-160dp (prototype: h-40), full width, badge top-left
             item(key = "hero") {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp),
+                        .height(160.dp),
                 ) {
                     AsyncImage(
                         model              = item.imageUrl,
@@ -351,7 +374,7 @@ private fun ItemDetailContent(
 
             // ── 3. Title + price on same row, description below ───────────────
             item(key = "title_block") {
-                Column(modifier = Modifier.padding(start = 16.dp, top = 14.dp, end = 16.dp, bottom = 8.dp)) {
+                Column(modifier = Modifier.padding(start = 16.dp, top = 10.dp, end = 16.dp, bottom = 6.dp)) {
                     Row(
                         modifier              = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -360,25 +383,25 @@ private fun ItemDetailContent(
                         Text(
                             text       = item.name,
                             modifier   = Modifier.weight(1f),
-                            style      = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.ExtraBold,
                             color      = DarkText,
+                            fontSize   = 15.sp,
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
                             text       = PriceCalculator.formatPrice(item.basePriceCents, currencySymbol),
-                            style      = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.ExtraBold,
                             color      = Terracotta,
+                            fontSize   = 15.sp,
                         )
                     }
-                    Spacer(Modifier.height(6.dp))
-                    // Description immediately below name+price, in muted terracotta color
+                    Spacer(Modifier.height(4.dp))
+                    // Description — MutedBrown per prototype: text-[#786457]
                     Text(
                         text       = item.description,
-                        style      = MaterialTheme.typography.bodySmall,
-                        color      = Terracotta.copy(alpha = 0.80f),
-                        lineHeight = 18.sp,
+                        fontSize   = 11.sp,
+                        color      = MutedBrown,
+                        lineHeight = 16.sp,
                     )
                 }
             }
@@ -520,27 +543,28 @@ private fun ItemDetailContent(
                 }
             }
 
-            // ── 7. Sugar Levels / Serving — pill chips, Espresso for selected ─
+            // ── 7. Sugar Levels / Serving — rounded-lg chips, Espresso for selected ─
             if (item.customizations.sugarLevels.isNotEmpty()) {
                 item(key = "sugar") {
                     CustomizationCard(title = "Sugar Levels / Serving") {
                         FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
                             verticalArrangement   = Arrangement.spacedBy(6.dp),
                         ) {
                             item.customizations.sugarLevels.forEach { sugar ->
                                 val isSelected = chosenSugar == sugar
-                                // Selected: Espresso dark (matches prototype screenshot)
+                                // Selected: Espresso dark fill per prototype: bg-[#140b07] text-white border-[#140b07]
+                                // Unselected: white bg, muted border, muted text
+                                // Shape: rounded-lg = RoundedCornerShape(8.dp) NOT pills
                                 Surface(
                                     onClick = { chosenSugar = sugar },
-                                    shape   = RoundedCornerShape(50),
+                                    shape   = RoundedCornerShape(8.dp),
                                     color   = if (isSelected) Espresso else Color.White,
-                                    border  = if (isSelected) null else BorderStroke(1.dp, Border),
+                                    border  = BorderStroke(1.dp, if (isSelected) Espresso else Border),
                                 ) {
                                     Text(
                                         text       = sugar,
-                                        modifier   = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                        style      = MaterialTheme.typography.labelSmall,
+                                        modifier   = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                         color      = if (isSelected) Color.White else MutedBrown,
                                         fontSize   = 10.sp,

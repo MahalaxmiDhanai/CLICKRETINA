@@ -502,7 +502,7 @@ fun MenuItemCard(
     Card(
         modifier  = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 5.dp)
+            .padding(horizontal = 16.dp, vertical = 4.dp)
             .clickable(onClick = onItemClick),
         shape     = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
@@ -515,90 +515,75 @@ fun MenuItemCard(
                 .padding(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Thumbnail
+            // Thumbnail — 56dp (prototype: w-14 h-14 = 56px)
             AsyncImage(
                 model              = item.imageUrl,
                 contentDescription = stringResource(R.string.cd_item_image),
                 modifier           = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(10.dp)),
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(8.dp)),
                 contentScale       = ContentScale.Crop,
             )
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
-                // Badge chip (e.g. BESTSELLER, FRESHLY BAKED)
+                // Badge chip — amber-100 bg + amber-900 text (prototype: bg-amber-100 text-amber-900)
                 if (item.badge.isNotBlank()) {
                     Surface(
-                        shape = RoundedCornerShape(50),
-                        color = Espresso.copy(alpha = 0.08f),
+                        shape = RoundedCornerShape(4.dp),
+                        color = Color(0xFFFEF3C7), // amber-100
                     ) {
                         Text(
                             text       = item.badge,
-                            modifier   = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
-                            style      = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.ExtraBold,
-                            color      = Terracotta,
+                            modifier   = Modifier.padding(horizontal = 6.dp, vertical = 1.dp),
+                            fontWeight = FontWeight.Bold,
+                            color      = Color(0xFF78350F), // amber-900
                             fontSize   = 9.sp,
-                            letterSpacing = 0.5.sp,
                         )
                     }
-                    Spacer(Modifier.height(3.dp))
+                    Spacer(Modifier.height(2.dp))
                 }
+                // Item name — bold espresso
                 Text(
                     text       = item.name,
-                    style      = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Bold,
                     color      = DarkText,
+                    fontSize   = 12.sp,
                     maxLines   = 1,
                     overflow   = TextOverflow.Ellipsis,
                 )
                 Spacer(Modifier.height(2.dp))
-                // Tagline
+                // Rating row
                 Text(
-                    text     = item.tagline,
-                    style    = MaterialTheme.typography.bodySmall,
+                    text     = "⭐ %.1f (%d)".format(item.rating, item.reviewCount),
+                    fontSize = 10.sp,
                     color    = MutedBrown,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(Modifier.height(4.dp))
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment     = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier              = Modifier.fillMaxWidth(),
                 ) {
-                    // Rating
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "⭐", fontSize = 12.sp)
-                        Spacer(Modifier.width(2.dp))
+                    // Price — terracotta, monospace
+                    Text(
+                        text       = PriceCalculator.formatPrice(item.basePriceCents, currencySymbol),
+                        fontWeight = FontWeight.Bold,
+                        color      = Terracotta,
+                        fontSize   = 12.sp,
+                    )
+                    // "+ Customize" button — solid terracotta
+                    Surface(
+                        shape   = RoundedCornerShape(6.dp),
+                        color   = Terracotta,
+                        onClick = onItemClick,
+                    ) {
                         Text(
-                            text  = "%.1f (%d)".format(item.rating, item.reviewCount),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MutedBrown,
-                        )
-                    }
-                    // Price in terracotta + Customize button
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text       = PriceCalculator.formatPrice(item.basePriceCents, currencySymbol),
-                            style      = MaterialTheme.typography.bodyMedium,
+                            text       = "+ Customize",
+                            modifier   = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                             fontWeight = FontWeight.Bold,
-                            color      = Terracotta,
+                            color      = Color.White,
+                            fontSize   = 10.sp,
                         )
-                        Spacer(Modifier.width(6.dp))
-                        Surface(
-                            shape = RoundedCornerShape(6.dp),
-                            color = Terracotta,
-                        ) {
-                            Text(
-                                text       = "+ Customize",
-                                modifier   = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
-                                style      = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color      = Color.White,
-                                fontSize   = 10.sp,
-                            )
-                        }
                     }
                 }
             }
