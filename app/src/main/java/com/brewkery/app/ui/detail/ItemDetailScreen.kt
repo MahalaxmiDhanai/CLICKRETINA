@@ -156,15 +156,14 @@ private fun ItemDetailContent(
             // ── Bottom action row — "- qty +" stepper | "Add to Cart • $X" button ──
             // Both are side-by-side on one row, matching the prototype exactly.
             Surface(
-                modifier        = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding(),
+                modifier        = Modifier.fillMaxWidth(),
                 shadowElevation = 8.dp,
                 color           = Color.White,
             ) {
                 Row(
                     modifier              = Modifier
                         .fillMaxWidth()
+                        .navigationBarsPadding()
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment     = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -270,7 +269,7 @@ private fun ItemDetailContent(
             modifier       = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
                 top    = innerPadding.calculateTopPadding(),
-                bottom = innerPadding.calculateBottomPadding() + 8.dp,
+                bottom = innerPadding.calculateBottomPadding() + 24.dp,
             ),
         ) {
 

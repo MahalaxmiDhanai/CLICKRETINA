@@ -143,7 +143,7 @@ fun MenuScreen(
 
                     LazyColumn(
                         modifier       = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(bottom = 8.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp),
                     ) {
 
                         // ── Top app bar (scrolls with content) ────────────────
@@ -608,7 +608,6 @@ fun CartStickyBar(
     Surface(
         modifier        = Modifier
             .fillMaxWidth()
-            .navigationBarsPadding()
             .clickable(onClick = onViewCart),
         color           = Espresso,
         shadowElevation = 12.dp,
@@ -616,6 +615,7 @@ fun CartStickyBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .navigationBarsPadding()
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment     = Alignment.CenterVertically,

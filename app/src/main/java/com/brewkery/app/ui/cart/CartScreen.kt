@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -145,7 +146,10 @@ fun CartScreen(
         } else {
             LazyColumn(
                 modifier       = Modifier.fillMaxSize(),
-                contentPadding = innerPadding,
+                contentPadding = PaddingValues(
+                    top    = innerPadding.calculateTopPadding(),
+                    bottom = innerPadding.calculateBottomPadding() + 16.dp,
+                ),
             ) {
                 items(
                     items = cartLines,
@@ -354,22 +358,25 @@ private fun PlaceOrderBar(
     onPlaceOrder:   () -> Unit,
 ) {
     Surface(
-        modifier        = Modifier
-            .fillMaxWidth()
-            .navigationBarsPadding(),
+        modifier        = Modifier.fillMaxWidth(),
         shadowElevation = 8.dp,
         color           = Color.White,
     ) {
-        Button(
-            onClick  = onPlaceOrder,
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .height(48.dp),
-            shape          = RoundedCornerShape(12.dp),
-            colors         = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
+                .navigationBarsPadding()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
         ) {
+            Button(
+                onClick  = onPlaceOrder,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape          = RoundedCornerShape(12.dp),
+                colors         = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
+            ) {
             // Gradient matches prototype: gradient-terracotta class
             Box(
                 modifier         = Modifier
@@ -395,6 +402,7 @@ private fun PlaceOrderBar(
             }
         }
     }
+}
 }
 
 // ── Empty cart state ──────────────────────────────────────────────────────────
