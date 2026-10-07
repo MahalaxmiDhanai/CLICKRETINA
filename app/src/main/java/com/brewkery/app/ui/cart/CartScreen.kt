@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -82,6 +84,9 @@ fun CartScreen(
         topBar = {
             // ── Cart header — back | "YOUR CART" center | Clear Cart right ────
             Surface(
+                modifier        = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding(),
                 color           = Color.White,
                 shadowElevation = 2.dp,
             ) {
@@ -349,7 +354,9 @@ private fun PlaceOrderBar(
     onPlaceOrder:   () -> Unit,
 ) {
     Surface(
-        modifier        = Modifier.fillMaxWidth(),
+        modifier        = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding(),
         shadowElevation = 8.dp,
         color           = Color.White,
     ) {

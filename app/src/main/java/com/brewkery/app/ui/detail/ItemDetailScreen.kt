@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -155,7 +156,9 @@ private fun ItemDetailContent(
             // ── Bottom action row — "- qty +" stepper | "Add to Cart • $X" button ──
             // Both are side-by-side on one row, matching the prototype exactly.
             Surface(
-                modifier        = Modifier.fillMaxWidth(),
+                modifier        = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding(),
                 shadowElevation = 8.dp,
                 color           = Color.White,
             ) {
@@ -265,7 +268,10 @@ private fun ItemDetailContent(
     ) { innerPadding ->
         LazyColumn(
             modifier       = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding()),
+            contentPadding = PaddingValues(
+                top    = innerPadding.calculateTopPadding(),
+                bottom = innerPadding.calculateBottomPadding() + 8.dp,
+            ),
         ) {
 
             // ── 1. Header row — back arrow circle | "ITEM CUSTOMIZER" | ❤ ────
