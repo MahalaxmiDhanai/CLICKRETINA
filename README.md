@@ -72,9 +72,9 @@ com.brewkery.app
 
 ### Steps
 ```bash
-# 1. Clone / unzip the project
-git clone <your-repo-url>
-cd brewkery
+# 1. Clone the project
+git clone https://github.com/MahalaxmiDhanai/CLICKRETINA.git
+cd CLICKRETINA
 
 # 2. Open in Android Studio → let Gradle sync
 
